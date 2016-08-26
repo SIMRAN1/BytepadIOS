@@ -78,7 +78,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if let cell = self.table.dequeueReusableCellWithIdentifier("Cell") as? PapersTableCell {
             
             cell.initCell(paper.name, detail: paper.detail)
-            print(cell)
             return cell
         }
         
@@ -103,7 +102,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             
             url = url.stringByReplacingOccurrencesOfString(" ", withString: "%20")
-            print(url)
             let destination = Alamofire.Request.suggestedDownloadDestination(directory: .DocumentDirectory, domain: .UserDomainMask)
             
             self.table.editing = false
@@ -219,7 +217,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: API call
     
     func getPapersData(){
-        Alamofire.request(.GET, "http://silive.in/bytepad/rest/api/paper/getallpapers?query=")
+        Alamofire.request(.GET, "http://bytepad.silive.in/rest/api/paper/getallpapers?query=")
             .responseJSON { response in
                 
                 self.activityIndicator.stopAnimating()
