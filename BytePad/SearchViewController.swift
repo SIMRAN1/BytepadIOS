@@ -7,10 +7,9 @@
 //
 
 import UIKit
-import Alamofire
 import SwiftyJSON
 import Onboard
-
+import Alamofire
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate{
     
     //MARK: Variables

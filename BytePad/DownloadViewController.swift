@@ -86,7 +86,7 @@ class DownloadViewController: UIViewController, UITableViewDataSource, UITableVi
                 print(file.filePathURL)
                 
                 // Save the data in the list as a tuple
-                self.items.append((file.lastPathComponent!, file.absoluteString))
+                self.items.append((file.lastPathComponent!, file.absoluteString!))
             }
             
         } catch let error as NSError {

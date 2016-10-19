@@ -5,7 +5,7 @@ use_frameworks!
 
 target 'BytePad' do
 pod 'Alamofire', '~> 3.0'
-pod 'SwiftyJSON'
+pod 'SwiftyJSON', '2.4.0'
 pod 'Onboard'
 end
 
