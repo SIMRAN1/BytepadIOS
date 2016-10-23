@@ -26,12 +26,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     
-    let secondPage = OnboardingContentViewController(title: "Page Title", body: "Page body goes here.", image: nil, buttonText: "Skip") { () -> Void in
+    let secondPage = OnboardingContentViewController(title: "Page Title", body: "Page body goes here.", image: UIImage(named:"description2"), buttonText: nil) { () -> Void in
         // do something here when users press the button, like ask for location services permissions, register for push notifications, connect to social media, or finish the onboarding process
         
     }
     
-    let thirdPage = OnboardingContentViewController(title: "Page Title", body: "Page body goes here.", image: nil, buttonText: "Skip") { () -> Void in
+    let thirdPage = OnboardingContentViewController(title: "Page Title", body: "Page body goes here.", image: UIImage(named:"description3"), buttonText: nil) { () -> Void in
         // do something here when users press the button, like ask for location services permissions, register for push notifications, connect to social media, or finish the onboarding process
         
     }
@@ -161,7 +161,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidLoad()
         
         let onboardingVC = OnboardingViewController(backgroundImage: nil, contents: [firstPage,secondPage,thirdPage])
-        onboardingVC.allowSkipping = true;
+       // onboardingVC.allowSkipping = true;
         onboardingVC.skipHandler = {
             self.dismissViewControllerAnimated(true, completion: nil)
         }
@@ -173,7 +173,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         onboardingVC.pageControl.currentPageIndicatorTintColor = UIColor.redColor()
 //        onboardingVC.pageControl.backgroundColor = UIColor.lightGrayColor()
         onboardingVC.shouldMaskBackground = false
-        
+        onboardingVC.topPadding = 0
         
         let screenSize: CGRect = UIScreen.mainScreen().bounds
         let screenWidth = screenSize.width
