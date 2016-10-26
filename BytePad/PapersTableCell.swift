@@ -14,7 +14,7 @@ class PapersTableCell: UITableViewCell {
     @IBOutlet weak var detailLabel: UILabel!
 //    @IBOutlet weak var downloadSpinner: UIActivityIndicatorView!
     
-    func initCell(paperName: String, detail: String)  {
+    func initCell(_ paperName: String, detail: String)  {
         self.paperNameLabel.text = paperName
         self.detailLabel.text = detail
     }

@@ -10,10 +10,10 @@ import Foundation
 
 
 class Paper {
-    private var _name : String
-    private var _exam : String
-    private var _url: String
-    private var _detail: String
+    fileprivate var _name : String
+    fileprivate var _exam : String
+    fileprivate var _url: String
+    fileprivate var _detail: String
     
     init(name: String, exam: String, url:String, detail: String) {
         self._exam = exam

@@ -14,7 +14,7 @@ class DownloadsTableCell: UITableViewCell {
     @IBOutlet weak var detailLabel: UILabel!
     var fileURL: String!
     
-    func initCell(paperName: String, detail: String, fileURL: String)  {
+    func initCell(_ paperName: String, detail: String, fileURL: String)  {
         self.paperNameLabel.text = paperName
         self.detailLabel.text = detail
         self.fileURL = fileURL
@@ -26,7 +26,7 @@ class DownloadsTableCell: UITableViewCell {
         // Initialization code
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

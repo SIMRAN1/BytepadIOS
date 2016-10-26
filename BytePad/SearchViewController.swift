@@ -44,37 +44,37 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var retryButton: UIButton!
     
     //MARK: Actions
-    @IBAction func retryButton(sender: UIButton) {
-        self.loadingMessageLabel.hidden = false
+    @IBAction func retryButton(_ sender: UIButton) {
+        self.loadingMessageLabel.isHidden = false
         self.loadingMessageLabel.text = "While the satellite moves into position..."
-        self.activityIndicator.hidden = false
+        self.activityIndicator.isHidden = false
         self.activityIndicator.startAnimating()
-        self.retryButton.hidden = true
+        self.retryButton.isHidden = true
         self.getPapersData()
         
     }
     
     // MARK: Table View
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // If in searching mode, then return the number of results else return the total number
-        if searchController.active && searchController.searchBar.text != "" {
+        if searchController.isActive && searchController.searchBar.text != "" {
             return filteredPapers.count
         }
         return papers.count
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let paper: Paper
         
-        if searchController.active && searchController.searchBar.text != "" {
-            paper = filteredPapers[indexPath.row]
+        if searchController.isActive && searchController.searchBar.text != "" {
+            paper = filteredPapers[(indexPath as NSIndexPath).row]
         } else {
-            paper = papers[indexPath.row]
+            paper = papers[(indexPath as NSIndexPath).row]
         }
         
-        if let cell = self.table.dequeueReusableCellWithIdentifier("Cell") as? PapersTableCell {
+        if let cell = self.table.dequeueReusableCell(withIdentifier: "Cell") as? PapersTableCell {
             
             cell.initCell(paper.name, detail: paper.detail)
             return cell
@@ -84,73 +84,89 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     }
     
-    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         
-        let downloadButton = UITableViewRowAction(style: .Normal, title: "Download") { action, index in
+        let downloadButton = UITableViewRowAction(style: .normal, title: "Download") { action, index in
             
             var url: String
             
-            if self.searchController.active {
-                url = String(self.filteredPapers[indexPath.row].url)
+            if self.searchController.isActive {
+                url = String(self.filteredPapers[(indexPath as NSIndexPath).row].url)
             } else {
-                url = String(self.papers[indexPath.row].url)
+                url = String(self.papers[(indexPath as NSIndexPath).row].url)
             }
             
-            url = url.stringByReplacingOccurrencesOfString(" ", withString: "%20")
-            let destination = Alamofire.Request.suggestedDownloadDestination(directory: .DocumentDirectory, domain: .UserDomainMask)
+            url = url.replacingOccurrences(of: " ", with: "%20")
+            let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
             
-            self.table.editing = false
+            self.table.isEditing = false
             
-            Alamofire.download(.GET, url, destination: destination).response { _, _, _, error in
-                if let error = error {
-                    print("Failed with error: \(error)")
-                } else {
-                    print("Downloaded file successfully")
+//            Alamofire.download(.GET, url, destination: destination).response { _, _, _, error in
+//                if let error = error {
+//                    print("Failed with error: \(error)")
+//                } else {
+//                    print("Downloaded file successfully")
+//                }
+//            }
+//            Alamofire.download( url, to: destination).response { _, _, _, error in
+//                if let error = error {
+//                    print("Failed with error: \(error)")
+//                } else {
+//                    print("Downloaded file successfully")
+//                }
+//            }
+            Alamofire.download(url, to: destination).response { response in
+                print(response)
+                
+                if response.error == nil{
+                print("Downloaded file successfully")
+                }
+                else{
+                  print("Failed with error: \(response.error)")
                 }
             }
-
         }
         
         
         
-        UIButton.appearance().setTitleColor(Constants.Color.grey, forState: UIControlState.Normal)
+        UIButton.appearance().setTitleColor(Constants.Color.grey, for: UIControlState())
         
         return [downloadButton]
 
     }
     
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // the cells you would like the actions to appear needs to be editable
         return true
     }
     
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         // you need to implement this method too or you can't swipe to display the actions
     }
     
     // MARK: Search
     
-    func filterContentForSearchText(searchText: String, scope: String = "All") {
+    func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         filteredPapers = papers.filter { paper in
             let categoryMatch = (scope == "All") || (paper.exam == scope)
-            return  categoryMatch && paper.name.lowercaseString.containsString(searchText.lowercaseString)
+            return  categoryMatch && paper.name.lowercased().contains(searchText.lowercased())
         }
         
         table.reloadData()
     }
     
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
         filterContentForSearchText(searchController.searchBar.text!, scope: scope)
         
     }
     
-    func searchBar(searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         filterContentForSearchText(searchBar.text!, scope: searchBar.scopeButtonTitles![selectedScope])
     }
     
@@ -162,29 +178,29 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let onboardingVC = OnboardingViewController(backgroundImage: nil, contents: [firstPage,secondPage,thirdPage])
        // onboardingVC.allowSkipping = true;
-        onboardingVC.skipHandler = {
-            self.dismissViewControllerAnimated(true, completion: nil)
+        onboardingVC?.skipHandler = {
+            self.dismiss(animated: true, completion: nil)
         }
         
-        UIButton.appearance().setTitleColor(Constants.Color.grey, forState: UIControlState.Normal)
+        UIButton.appearance().setTitleColor(Constants.Color.grey, for: UIControlState())
         
-        onboardingVC.skipButton.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-        onboardingVC.pageControl.pageIndicatorTintColor = UIColor.blackColor()
-        onboardingVC.pageControl.currentPageIndicatorTintColor = UIColor.redColor()
+        onboardingVC?.skipButton.setTitleColor(UIColor.black, for: UIControlState())
+        onboardingVC?.pageControl.pageIndicatorTintColor = UIColor.black
+        onboardingVC?.pageControl.currentPageIndicatorTintColor = UIColor.red
 //        onboardingVC.pageControl.backgroundColor = UIColor.lightGrayColor()
-        onboardingVC.shouldMaskBackground = false
-        onboardingVC.topPadding = 0
+        onboardingVC?.shouldMaskBackground = false
+        onboardingVC?.topPadding = 0
         
-        let screenSize: CGRect = UIScreen.mainScreen().bounds
+        let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
         
-        firstPage.iconHeight = CGFloat(screenHeight+44)
-        firstPage.iconWidth = CGFloat(screenWidth)
-        firstPage.underIconPadding = CGFloat(0)
+        firstPage?.iconHeight = CGFloat(screenHeight+44)
+        firstPage?.iconWidth = CGFloat(screenWidth)
+        firstPage?.underIconPadding = CGFloat(0)
 
         
-        self.presentViewController(onboardingVC, animated: true, completion: nil)
+        self.present(onboardingVC!, animated: true, completion: nil)
         
         self.getPapersData()
         
@@ -201,7 +217,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let titleLabel = UILabel()
         let colour = UIColor(red:1.00, green:1.00, blue:1.00, alpha:0.6)
-        let attributes: [String : AnyObject] = [NSFontAttributeName: UIFont.systemFontOfSize(14), NSForegroundColorAttributeName: colour, NSKernAttributeName : 3.5]
+        let attributes: [String : AnyObject] = [NSFontAttributeName: UIFont.systemFont(ofSize: 14), NSForegroundColorAttributeName: colour, NSKernAttributeName : 3.5 as AnyObject]
         titleLabel.attributedText = NSAttributedString(string: "BYTEPAD", attributes: attributes)
         titleLabel.sizeToFit()
         self.navigationItem.titleView = titleLabel
@@ -216,24 +232,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: API call
     
     func getPapersData(){
-        Alamofire.request(.GET, "http://bytepad.silive.in/rest/api/paper/getallpapers?query=")
+        Alamofire.request( "http://bytepad.silive.in/rest/api/paper/getallpapers?query=")
             .responseJSON { response in
                 
                 self.activityIndicator.stopAnimating()
-                self.activityIndicator.hidden = true
+                self.activityIndicator.isHidden = true
                 
                 // If the network works fine
                 if response.result.isFailure != true {
                     
-                    self.loadingMessageLabel.hidden = true
-                    self.table.hidden = false
+                    self.loadingMessageLabel.isHidden = true
+                    self.table.isHidden = false
                     //print(response.result)   // result of response serialization
                     
                     let json = JSON(response.result.value!)
                     
                     for item in json {
                         // Split the title on the . to remove the extention
-                        let title = item.1["Title"].string!.characters.split(".").map(String.init)[0]
+                        let title = item.1["Title"].string!.characters.split(separator: ".").map(String.init)[0]
                         let category = item.1["ExamCategory"].string
                         let url = item.1["URL"].string
                         let detail = item.1["PaperCategory"].string
@@ -247,7 +263,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
                     // If the network fails
                 else {
-                    self.retryButton.hidden = false
+                    self.retryButton.isHidden = false
                     self.loadingMessageLabel.text = "Check your internet connectivity"
                 }
                 
