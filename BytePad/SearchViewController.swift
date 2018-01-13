@@ -57,6 +57,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: Table View
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         // If in searching mode, then return the number of results else return the total number
         if searchController.isActive  {
             return filteredPapers.count
@@ -65,6 +66,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         
         let paper: Paper
         
@@ -75,7 +77,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         if let cell = self.table.dequeueReusableCell(withIdentifier: "Cell") as? PapersTableCell {
-            
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsets.zero
+            cell.layoutMargins = UIEdgeInsets.zero
             cell.initCell(paper.name, detail: paper.detail)
             return cell
         }
