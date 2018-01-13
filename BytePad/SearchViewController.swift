@@ -58,7 +58,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // If in searching mode, then return the number of results else return the total number
-        if searchController.isActive && searchController.searchBar.text != "" {
+        if searchController.isActive  {
             return filteredPapers.count
         }
         return papers.count
@@ -68,7 +68,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let paper: Paper
         
-        if searchController.isActive && searchController.searchBar.text != "" {
+        if searchController.isActive  {
             paper = filteredPapers[(indexPath as NSIndexPath).row]
         } else {
             paper = papers[(indexPath as NSIndexPath).row]
@@ -153,7 +153,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         filteredPapers = papers.filter { paper in
             let categoryMatch = (scope == "All") || (paper.exam == scope)
+            if searchController.searchBar.text != ""{
             return  categoryMatch && paper.name.lowercased().contains(searchText.lowercased())
+            }
+            else {
+                return categoryMatch
+            }
         }
         
         table.reloadData()
