@@ -8,7 +8,7 @@
 
 import UIKit
 import SwiftyJSON
-import Onboard
+//import Onboard
 import Alamofire
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate{
     
@@ -19,7 +19,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     let searchController = UISearchController(searchResultsController: nil)
     
     
-    let firstPage = OnboardingContentViewController(title: nil, body: "Swipe to download", image: UIImage(named: "ss1"), buttonText: nil) { () -> Void in
+  /*  let firstPage = OnboardingContentViewController(title: nil, body: "Swipe to download", image: UIImage(named: "ss1"), buttonText: nil) { () -> Void in
         // do something here when users press the button, like ask for location services permissions, register for push notifications, connect to social media, or finish the onboarding process
         print( 1+1)
     }
@@ -34,8 +34,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     let thirdPage = OnboardingContentViewController(title: "Page Title", body: "Page body goes here.", image: UIImage(named:"description3"), buttonText: nil) { () -> Void in
         // do something here when users press the button, like ask for location services permissions, register for push notifications, connect to social media, or finish the onboarding process
         
-    }
-    
+    }*/
+    var ExamType:[Int:String] = [1:"UT", 2:"PUT", 3:"ST-1",4:"ST-2"]
     
     // MARK: Outlets
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -95,11 +95,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             var url: String
             
             if self.searchController.isActive {
-                url = String(self.filteredPapers[(indexPath as NSIndexPath).row].url)
+                url = "http://testapi.silive.in/PaperFileUpload/"+self.category+"/"+String(self.filteredPapers[(indexPath as NSIndexPath).row].url)
             } else {
-                url = String(self.papers[(indexPath as NSIndexPath).row].url)
+                url = "http://testapi.silive.in/PaperFileUpload/"+self.category+"/"+String(self.papers[(indexPath as NSIndexPath).row].url)
             }
-            
+            /*var urltemp = "http://testapi.silive.in/PaperFileUpload/PUT/PUT%20Even%20Sem%20%202011%20-%202012%20Solution%2FAdvance%20Computer%20Architecture%20TCS802.doc"*/
             url = url.replacingOccurrences(of: " ", with: "%20")
             let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory, in: .userDomainMask)
             
@@ -176,7 +176,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let onboardingVC = OnboardingViewController(backgroundImage: nil, contents: [firstPage,secondPage,thirdPage])
+        /*let onboardingVC = OnboardingViewController(backgroundImage: nil, contents: [firstPage,secondPage,thirdPage])
        // onboardingVC.allowSkipping = true;
         onboardingVC?.skipHandler = {
             self.dismiss(animated: true, completion: nil)
@@ -201,7 +201,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         
         self.present(onboardingVC!, animated: true, completion: nil)
-        
+        */
         self.getPapersData()
         
         searchController.searchBar.tintColor = UIColor(red:0.45, green:0.45, blue:0.45, alpha:1.0)
@@ -210,7 +210,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         searchController.dimsBackgroundDuringPresentation = false
         definesPresentationContext = true
         table.tableHeaderView = searchController.searchBar
-        searchController.searchBar.scopeButtonTitles = ["All", "ST1", "ST2", "PUT", "UT"]
+        searchController.searchBar.scopeButtonTitles = ["All", "ST-1", "ST-2", "PUT", "UT"]
         searchController.searchBar.delegate = self
         activityIndicator.startAnimating()
         
@@ -230,9 +230,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     // MARK: API call
-    
+    var category: String = ""
     func getPapersData(){
-        Alamofire.request( "http://bytepad.silive.in/rest/api/paper/getallpapers?query=")
+        Alamofire.request( "http://testapi.silive.in/api//get_list_")
             .responseJSON { response in
                 
                 self.activityIndicator.stopAnimating()
@@ -249,12 +249,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     
                     for item in json {
                         // Split the title on the . to remove the extention
-                        let title = item.1["Title"].string!.characters.split(separator: ".").map(String.init)[0]
-                        let category = item.1["ExamCategory"].string
-                        let url = item.1["URL"].string
-                        let detail = item.1["PaperCategory"].string
+                        let title = item.1["file_url"].string!.characters.split(separator: "/").map(String.init)[1].characters.split(separator: ".").map(String.init)[0]
+                        self.category = self.ExamType[item.1["exam_type_id"].int!]!
+                        let url = item.1["file_url"].string
+                        let detail = item.1["file_url"].string!.characters.split(separator: "/").map(String.init)[0]
                         
-                        let paper = Paper(name: title, exam: category!, url: url!, detail: detail!)
+                        let paper = Paper(name: title, exam: self.category, url: url!, detail: detail)
                         self.papers.append(paper)
                         
                     }
