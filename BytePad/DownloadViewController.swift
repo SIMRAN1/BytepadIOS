@@ -45,21 +45,7 @@ class DownloadViewController: UIViewController, UITableViewDataSource, UITableVi
         
     }
     
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        
-        
-        let deleteButton = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
-            
-            
-        }
-        
-        
-        UIButton.appearance().setTitleColor(Constants.Color.grey, for: UIControlState())
-        
-        return [deleteButton]
-        
-    }
-    
+   
     
     override func viewDidAppear(_ animated: Bool) {
         
