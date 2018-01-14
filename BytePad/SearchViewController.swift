@@ -123,6 +123,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 //                    print("Downloaded file successfully")
 //                }
 //            }
+            print(url)
             Alamofire.download(url, to: destination).response { response in
                 print(response)
                 

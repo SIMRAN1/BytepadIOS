@@ -11,7 +11,7 @@ import QuickLook
 
 class DownloadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, QLPreviewControllerDataSource {
     
-    var items = [(name:String, url:String)]()
+    var items = [(name:String,detail:String,url:String)]()
 
     @IBOutlet weak var downloadsTable: UITableView!
     
@@ -36,7 +36,7 @@ class DownloadViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if let cell = self.downloadsTable.dequeueReusableCell(withIdentifier: "Download Cell") as? DownloadsTableCell {
             
-            cell.initCell(items[(indexPath as NSIndexPath).row].name, detail: "", fileURL: items[(indexPath as NSIndexPath).row].url)
+            cell.initCell(items[(indexPath as NSIndexPath).row].name, detail:items[(indexPath as NSIndexPath).row].detail, fileURL: items[(indexPath as NSIndexPath).row].url)
 
             return cell
         }
@@ -58,21 +58,26 @@ class DownloadViewController: UIViewController, UITableViewDataSource, UITableVi
         
         items.removeAll()
         
-        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        print("Hello"+String(describing: documentsUrl))
         
         // now lets get the directory contents (including folders)
         do {
-            let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions())
-//            print(directoryContents)
+            let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl[0], includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions())
+   print("HI")
+            print(directoryContents)
             
             for  file in directoryContents {
                 print(file.lastPathComponent)
                 print(file.absoluteURL)
                 print(file.baseURL)
                 print((file as NSURL).filePathURL)
+                let fileName = file.absoluteString
+                let fileArray = fileName.components(separatedBy: "_")
+                let finalFileName = fileArray[fileArray.count-1]
                 
                 // Save the data in the list as a tuple
-                self.items.append((file.lastPathComponent, file.absoluteString))
+                self.items.append((file.lastPathComponent,"",file.absoluteString))
             }
             
         } catch let error as NSError {
@@ -90,6 +95,7 @@ class DownloadViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         let url:URL = URL(string: items[index].url)!
+        print(url)
         return url as QLPreviewItem
     }
     
