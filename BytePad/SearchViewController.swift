@@ -99,9 +99,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             var url: String
             
             if self.searchController.isActive {
-                url = "http://testapi.silive.in/PaperFileUpload/"+self.category+"/"+String(self.filteredPapers[(indexPath as NSIndexPath).row].url)
+                url = "http://testapi.silive.in/PaperFileUpload/"+self.category+"/"+String(self.filteredPapers[(indexPath as NSIndexPath).row].url).replacingOccurrences(of: "\\", with: "/")
             } else {
-                url = "http://testapi.silive.in/PaperFileUpload/"+self.category+"/"+String(self.papers[(indexPath as NSIndexPath).row].url)
+                url = "http://testapi.silive.in/PaperFileUpload/"+self.category+"/"+String(self.papers[(indexPath as NSIndexPath).row].url).replacingOccurrences(of: "\\", with: "/")
             }
             /*var urltemp = "http://testapi.silive.in/PaperFileUpload/PUT/PUT%20Even%20Sem%20%202011%20-%202012%20Solution%2FAdvance%20Computer%20Architecture%20TCS802.doc"*/
             url = url.replacingOccurrences(of: " ", with: "%20")
@@ -259,7 +259,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     
                     for item in json {
                         // Split the title on the . to remove the extention
-                        let title = item.1["file_url"].string!.characters.split(separator: "/").map(String.init)[1].characters.split(separator: ".").map(String.init)[0]
+                        let title = item.1["file_url"].string!.characters.split(separator: "\\").map(String.init)[3].characters.split(separator: ".").map(String.init)[0]
                         self.category = self.ExamType[item.1["exam_type_id"].int!]!
                         let url = item.1["file_url"].string
                         let detail = item.1["file_url"].string!.characters.split(separator: "/").map(String.init)[0]
